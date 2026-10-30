@@ -19,7 +19,7 @@ def class_distribution(train_label, test_label, class_names, show):
     te = [test_counts[c] for c in class_names]  ##find the image count and add that count to this new list
 
     x = np.arange(len(class_names))
-    fig, ax = plt.subplot(figsize = (8,4.5))
+    fig, ax = plt.subplots(figsize = (8,4.5))
     b1 = ax.bar(x - 0.2, tr, 0.4, label="Training") ###creating bars
     b2 = ax.bar(x + 0.2, te, 0.4, label="Testing")
     ax.bar_label(b1)
