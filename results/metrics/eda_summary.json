@@ -1,0 +1,78 @@
+{
+  "classes": [
+    "glioma",
+    "meningioma",
+    "notumor",
+    "pituitary"
+  ],
+  "distribution": {
+    "train": {
+      "glioma": 1400,
+      "meningioma": 1400,
+      "notumor": 1400,
+      "pituitary": 1400
+    },
+    "test": {
+      "glioma": 400,
+      "meningioma": 400,
+      "notumor": 400,
+      "pituitary": 400
+    },
+    "imbalance_ratio": 1.0
+  },
+  "images": {
+    "sampled": 600,
+    "width": {
+      "min": 150,
+      "max": 1275,
+      "mean": 458.50166666666667
+    },
+    "height": {
+      "min": 168,
+      "max": 1427,
+      "mean": 462.9483333333333
+    },
+    "top_sizes": [
+      {
+        "size": [
+          512,
+          512
+        ],
+        "count": 427
+      },
+      {
+        "size": [
+          225,
+          225
+        ],
+        "count": 23
+      },
+      {
+        "size": [
+          630,
+          630
+        ],
+        "count": 8
+      },
+      {
+        "size": [
+          150,
+          198
+        ],
+        "count": 7
+      },
+      {
+        "size": [
+          359,
+          449
+        ],
+        "count": 6
+      }
+    ],
+    "modes": {
+      "RGB": 360,
+      "L": 240
+    },
+    "mean_intensity": 46.673728942871094
+  }
+}
