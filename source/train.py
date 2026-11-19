@@ -54,7 +54,7 @@ def main(args):
           f"test: {len(test_gen.paths)}")
 
     weights = None if args.weights == "none" else args.weights
-    model, basese = build_model(len(class_names), weights = weights)
+    model, base = build_model(len(class_names), weights = weights)
 
     class_weight = get_class_weights(train_gen) if args.class_weights else None
     if class_weight:
