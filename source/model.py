@@ -31,7 +31,7 @@ def build_model(num_classes, img_size = IMG_SIZE, weights = "imagenet", dropout 
 def compile_model(model, lr):
     model.compile(
         optimizer = Adam(learning_rate = lr),
-        loss = "Categorical_crossentropy",
+        loss = "categorical_crossentropy",
         metrics = ["accuracy"],
     )
     return model
@@ -41,7 +41,7 @@ def unfreeze_block(base, block= "block5"):
     base.trainable = True
     for layer in base.layers:
         layer.trainable = layer.name.startswith(block)
-        return [l.name for l in base.layers if l.trainable]
+    return [l.name for l in base.layers if l.trainable]
 
 if __name__ == "__main__":
     model, base = build_model(num_classes=4, weights=None)

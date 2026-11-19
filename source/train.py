@@ -54,7 +54,7 @@ def main(args):
           f"test: {len(test_gen.paths)}")
 
     weights = None if args.weights == "none" else args.weights
-    model, abse = build_model(len(class_names), weights = weights)
+    model, basese = build_model(len(class_names), weights = weights)
 
     class_weight = get_class_weights(train_gen) if args.class_weights else None
     if class_weight:
@@ -72,4 +72,28 @@ def main(args):
                    , class_weight = class_weight).history
 
 ### this part covers to fine tune block 5
-    
+    unfrozen = unfreeze_block(base)
+    print(f"\n=== Phase 2: fine-tuning {len(unfrozen)} VGG16 layers ({ft_epochs} epochs) ===")
+    compile_model(model, FINE_TUNE_LR)  # must recompile after changing trainable layers
+    h2 = model.fit(train_gen, validation_data=val_gen, epochs=ft_epochs,
+                   callbacks=make_callbacks(2), class_weight=class_weight).history
+
+    final_path = MODELS_DIR / "brain_tumor_vgg16.keras"
+    model.save(final_path)
+    (METRICS_DIR / "history.json").write_text(json.dumps({"phase1": h1, "phase2": h2}, indent=2))
+    plot_history(h1,h2,PLOTS_DIR / "training_curves.png")
+
+    print(f"\nSaved model:  {final_path}")
+    print(f"Saved curves: {PLOTS_DIR / 'training_curves.png'}")
+    print(f"Best val accuracy: phase 1 {max(h1['val_accuracy']):.4f}, "
+          f"phase 2 {max(h2['val_accuracy']):.4f}")
+
+if __name__ == "__main__":
+    p = argparse.ArgumentParser()
+    p.add_argument("--quick", action="store_true", help="1 epoch per phase (smoke test)")
+    p.add_argument("--head-epochs", type=int, default=HEAD_EPOCHS)
+    p.add_argument("--fine-tune-epochs", type=int, default=FINE_TUNE_EPOCHS)
+    p.add_argument("--class-weights", action="store_true")
+    p.add_argument("--weights", default="imagenet", choices=["imagenet", "none"],
+                   help="'none' skips the ImageNet download (testing only)")
+    main(p.parse_args())
