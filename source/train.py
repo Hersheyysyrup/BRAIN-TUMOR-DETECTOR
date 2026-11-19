@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 from keras.callbacks import (CSVLogger, EarlyStopping,ModelCheckpoint,ReduceLROnPlateau)
-from config import (CHECKPOINT_DIR, FINE_TUNE, FINE_TUNE_LR, HEAD_EPOCHS, HEAD_LR,
-                    METRICS_DIR, PLOTS_DIR, SEED, make_dirs)
+from config import (CHECKPOINT_DIR, FINE_TUNE_EPOCHS, FINE_TUNE_LR, HEAD_EPOCHS, HEAD_LR,
+                    METRICS_DIR,MODELS_DIR, PLOTS_DIR, SEED, make_dirs)
 
 from model import build_model, compile_model, unfreeze_block
 from preprocess import make_generators
@@ -42,3 +42,34 @@ def plot_history(h1,h2, out):
     fig.tight_layout()
     fig.savefig(out, dpi=150)
     plt.close(fig)
+
+def main(args):
+    make_dirs()
+    tf.keras.utils.set_random_seed(SEED)
+
+    train_gen, val_gen, test_gen, class_names = make_generators()
+    (MODELS_DIR / "class_names.json").write_text(json.dumps(class_names))
+    print("Classes:", class_names)
+    print(f"Images -> train: {len(train_gen.paths)}, val: {len(val_gen.paths)}, "
+          f"test: {len(test_gen.paths)}")
+
+    weights = None if args.weights == "none" else args.weights
+    model, abse = build_model(len(class_names), weights = weights)
+
+    class_weight = get_class_weights(train_gen) if args.class_weights else None
+    if class_weight:
+        print("Class weights:", {class_names[i]: round(w, 3) for i, w in class_weight.items()})
+
+    epochs = 1 if args.quick else args.head_epochs
+    ft_epochs = 1 if args.quick else args.fine_tune_epochs
+
+
+### this part covers head only 
+
+    print(f"\n=== Phase 1: training the classifier head ({epochs} epochs) ===")
+    compile_model(model, HEAD_LR)
+    h1 = model.fit(train_gen, validation_data = val_gen, epochs = epochs, callbacks = make_callbacks(1)
+                   , class_weight = class_weight).history
+
+### this part covers to fine tune block 5
+    

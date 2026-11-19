@@ -5,7 +5,7 @@
 
 from data import DATASET, IMG_FORMATS, ROOT, SEED, TEST_DIR, TRAIN_DIR
 
-IMG_SIZE = 244    ###to be changes 128 later 
+IMG_SIZE = 224    ###to be changes 128 later 
 BATCH_SIZE = 32
 VAL_SIZE = 0.15
 
