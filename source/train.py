@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 from keras.callbacks import (CSVLogger, EarlyStopping,ModelCheckpoint,ReduceLROnPlateau)
-from config import (CHECKPOINT_DIR, FINE_TUNE_EPOCHS, FINE_TUNE_LR, HEAD_EPOCHS, HEAD_LR,
+from config import (CHECKPOINT_DIR, FINE_TUNE_EPOCHS, FINE_TUNE_LR, EPOCHS, HEAD_LR,
                     METRICS_DIR,MODELS_DIR, PLOTS_DIR, SEED, make_dirs)
 
 from model import build_model, compile_model, unfreeze_block
@@ -91,7 +91,7 @@ def main(args):
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("--quick", action="store_true", help="1 epoch per phase (smoke test)")
-    p.add_argument("--head-epochs", type=int, default=HEAD_EPOCHS)
+    p.add_argument("--head-epochs", type=int, default=EPOCHS)
     p.add_argument("--fine-tune-epochs", type=int, default=FINE_TUNE_EPOCHS)
     p.add_argument("--class-weights", action="store_true")
     p.add_argument("--weights", default="imagenet", choices=["imagenet", "none"],

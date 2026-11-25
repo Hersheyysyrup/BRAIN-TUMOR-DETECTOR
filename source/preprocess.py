@@ -24,7 +24,7 @@ def augment_image(img):
     img = img.rotate(
         random.uniform(-10, 10),
         translate = (random.uniform(-shift, shift), random.uniform(-shift, shift)),
-        resample = Image.BILENIAR,
+        resample = Image.BILINEAR,
     )
 
     return img

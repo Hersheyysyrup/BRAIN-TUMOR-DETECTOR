@@ -1,2 +1,8 @@
-### ignore dataset 
-/dataset 
+__pycache__/
+*.pyc
+venv/
+dataset/
+models/checkpoints/
+*.keras
+results/
+.vscode/
