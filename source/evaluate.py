@@ -16,7 +16,7 @@ def plot_confusion_matrix(cm, class_names, out, show=False):
     fig, axes = plt.subplots(1,2, figsize = (13, 5.5))
     for ax, data, title , fmt in [(axes[0], cm, "Confusion matrix (counts)","d"),
                                   (axes[1], cm_norm, "Confusion matrix (row-normalised)", ".2f")]:
-        im = ax.amshow(data, cmap = "Blues")
+        im = ax.imshow(data, cmap = "Blues")
         ax.set_title(title)
         ax.set_xticks(range(len(class_names)))
         ax.set_yticks(range(len(class_names)))
@@ -26,12 +26,12 @@ def plot_confusion_matrix(cm, class_names, out, show=False):
         ax.set_ylabel("True")
         for i in range(len(class_names)):
             for j in range (len(class_names)):
-                ax.tests(j, i, format(data[i,j], fmt), ha = "center", va = "center", color = "white"
-                     if data[i,j] > data.max() / 2 else "black")
-        fig.colorbar(im, ax = ax, fraction = 0.046)
-        fig.tight_layout()
-        fig.savefig(out, dpi= 150)
-        plt.show() if show else plt.close(fig)
+                ax.text(j, i, format(data[i, j], fmt), ha="center", va="center",
+                        color="white" if data[i, j] > data.max() / 2 else "black")
+        fig.colorbar(im, ax=ax, fraction=0.046)
+    fig.tight_layout()
+    fig.savefig(out, dpi=150)
+    plt.show() if show else plt.close(fig)
 
 def plot_misclassified(paths, y_true, y_pred, probs, class_names, out, n=12, show=False):
     wrong = np.where(y_true != y_pred)[0]
@@ -73,7 +73,7 @@ def main(args):
     accuracy = float((y_pred == y_true).mean())
     report_txt = classification_report(y_true, y_pred, target_names = class_names, digits = 4
                                        , zero_division = 0)
-    report =classification_report(y_true, y_pred, target_names = class_names, output_dict = True, zero_divsion = 0 )
+    report =classification_report(y_true, y_pred, target_names = class_names, output_dict = True, zero_division=0 )
 
     cm = confusion_matrix(y_true, y_pred)
 
@@ -87,17 +87,18 @@ def main(args):
         "model": str(args.model),
         "test_images" : int(len(y_true)),
         "accuracy": accuracy,
-        "macro_f1": report["macro"]["f1-score"],
+        "macro_f1": report["macro avg"]["f1-score"],
         "per_class": {c : report[c] for c in class_names},
         "confusion_matrix" : cm.tolist(),
     }, indent = 2))
 
     plot_confusion_matrix(cm, class_names, PLOTS_DIR/"confusion_matrix.png", args.show)
-    plot_misclassified(test_gen.paths, y_true, y_pred, probs, class_names, PLOTS_DIR / "misclassified.png, show = args.show")
+    plot_misclassified(test_gen.paths, y_true, y_pred, probs, class_names,
+                       PLOTS_DIR / "misclassified.png", show=args.show)
     print(f"\nSaved results to {METRICS_DIR} and {PLOTS_DIR}")
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("--model", default=str(MODELS_DIR / "brain_tumor_vgg16.keras"))
     p.add_argument("--show", action="store_true")
-    main(p.oarse_args())
+    main(p.parse_args())
