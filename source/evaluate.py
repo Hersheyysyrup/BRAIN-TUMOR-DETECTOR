@@ -81,3 +81,23 @@ def main(args):
     print(report_txt)
     print("Confusion matrix (rows = true, columns = predicted):")
     print(cm)
+
+    (METRICS_DIR / "classification_report.txt").write_text(report_txt)
+    (METRICS_DIR / "text_metrics.json").write_text(json.dumps({
+        "model": str(args.model),
+        "test_images" : int(len(y_true)),
+        "accuracy": accuracy,
+        "macro_f1": report["macro"]["f1-score"],
+        "per_class": {c : report[c] for c in class_names},
+        "confusion_matrix" : cm.tolist(),
+    }, indent = 2))
+
+    plot_confusion_matrix(cm, class_names, PLOTS_DIR/"confusion_matrix.png", args.show)
+    plot_misclassified(test_gen.paths, y_true, y_pred, probs, class_names, PLOTS_DIR / "misclassified.png, show = args.show")
+    print(f"\nSaved results to {METRICS_DIR} and {PLOTS_DIR}")
+
+if __name__ == "__main__":
+    p = argparse.ArgumentParser()
+    p.add_argument("--model", default=str(MODELS_DIR / "brain_tumor_vgg16.keras"))
+    p.add_argument("--show", action="store_true")
+    main(p.oarse_args())
